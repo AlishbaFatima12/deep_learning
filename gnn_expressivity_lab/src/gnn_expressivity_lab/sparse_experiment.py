@@ -3,6 +3,8 @@ import argparse
 import json
 import random
 import time
+import platform
+import sys
 from pathlib import Path
 from statistics import mean, pstdev
 import torch
@@ -40,16 +42,30 @@ def _chunks(items, batch_size):
         yield items[start:start + batch_size]
 
 def evaluate(model, graphs, batch_size=8):
-    """Calculate graph classification accuracy without gradient tracking."""
+    """Return graph accuracy and inference wall-clock seconds."""
     model.eval()
     correct = total = 0
+    start = time.perf_counter()
     with torch.no_grad():
         for group in _chunks(graphs, batch_size):
             batch = batch_graphs(group)
             predictions = model(batch).argmax(dim=-1)
             correct += int((predictions == batch.y).sum().item())
             total += len(group)
-    return correct / max(total, 1)
+    elapsed = time.perf_counter() - start
+    return correct / max(total, 1), elapsed
+
+def environment_metadata():
+    """Capture context needed to interpret local timing measurements."""
+    return {
+        "python": sys.version.split()[0],
+        "pytorch": torch.__version__,
+        "platform": platform.platform(),
+        "processor": platform.processor() or platform.machine(),
+        "device": "cpu",
+        "torch_threads": torch.get_num_threads(),
+        "memory_note": "Peak process/accelerator memory is not measured by this runner."
+    }
 
 def train_on_split(train, test, num_classes, architecture, seed, epochs=120,
                    hidden_dim=32, batch_size=8, pooling="mean"):
@@ -72,12 +88,18 @@ def train_on_split(train, test, num_classes, architecture, seed, epochs=120,
             loss.backward()
             optimizer.step()
     elapsed = time.perf_counter() - start
+    train_accuracy, train_inference_seconds = evaluate(model, train, batch_size)
+    test_accuracy, test_inference_seconds = evaluate(model, test, batch_size)
+    parameter_count = sum(p.numel() for p in model.parameters())
     return {
         "seed": seed,
-        "train_accuracy": evaluate(model, train, batch_size),
-        "test_accuracy": evaluate(model, test, batch_size),
+        "train_accuracy": train_accuracy,
+        "test_accuracy": test_accuracy,
         "training_seconds": elapsed,
-        "parameter_count": sum(p.numel() for p in model.parameters()),
+        "train_inference_seconds": train_inference_seconds,
+        "test_inference_seconds": test_inference_seconds,
+        "parameter_count": parameter_count,
+        "parameter_bytes_fp32_estimate": parameter_count * 4,
     }
 
 def train_model(graphs, num_classes, architecture, seed, epochs=120,
@@ -102,7 +124,9 @@ def run_graph_experiment(graphs, num_classes, seeds=(11, 23, 37), epochs=120,
             "test_accuracy_mean": mean(test_scores),
             "test_accuracy_population_sd": pstdev(test_scores),
             "training_seconds_mean": mean(r["training_seconds"] for r in runs),
+            "test_inference_seconds_mean": mean(r["test_inference_seconds"] for r in runs),
             "parameter_count": runs[0]["parameter_count"],
+            "parameter_bytes_fp32_estimate": runs[0]["parameter_bytes_fp32_estimate"],
             "per_seed": runs,
         }
     return {
@@ -114,6 +138,7 @@ def run_graph_experiment(graphs, num_classes, seeds=(11, 23, 37), epochs=120,
             "pooling": "mean", "architectures": list(architectures),
             "timing_note": "Training wall-clock time measured locally; hardware and software context must accompany comparisons."
         },
+        "environment": environment_metadata(),
         "models": results,
     }
 
