@@ -69,6 +69,6 @@ def main():
     parser.add_argument("--output", type=Path, default=Path("results/summary.json")); args = parser.parse_args()
     if args.epochs < 1: parser.error("--epochs must be positive")
     result = run_experiment(tuple(args.seeds), args.epochs); args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2) + "\\n", encoding="utf-8"); print(json.dumps(result, indent=2))
+    args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8"); print(json.dumps(result, indent=2))
 
 if __name__ == "__main__": main()
