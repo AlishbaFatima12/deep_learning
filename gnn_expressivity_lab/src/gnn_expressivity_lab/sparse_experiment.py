@@ -142,9 +142,11 @@ def run_graph_experiment(graphs, num_classes, seeds=(11, 23, 37), epochs=120,
         "models": results,
     }
 
-def run_synthetic_experiment(seeds=(11, 23, 37), epochs=120, hidden_dim=32, batch_size=8):
+def run_synthetic_experiment(seeds=(11, 23, 37), epochs=120, hidden_dim=32, batch_size=8, feature_mode="constant"):
     """Run the controlled synthetic graph-family comparison and 1-WL diagnostic."""
-    graphs = benchmark_graphs(feature_mode="constant")
+    if feature_mode not in {"constant", "degree"}:
+        raise ValueError("feature_mode must be constant or degree")
+    graphs = benchmark_graphs(feature_mode=feature_mode)
     result = run_graph_experiment(graphs, 5, seeds, epochs, hidden_dim=hidden_dim,
                                   batch_size=batch_size, dataset_name="synthetic-graph-families")
     c10, two_c5 = cycle_graph(10), disjoint_cycles([5, 5])
@@ -157,7 +159,7 @@ def run_synthetic_experiment(seeds=(11, 23, 37), epochs=120, hidden_dim=32, batc
     result["dataset_description"] = {
         "graph_count": len(graphs), "class_count": 5,
         "graph_families": ["path", "star", "wheel", "complete", "complete_bipartite"],
-        "sizes_per_family": 6, "features": "constant scalar per node",
+        "sizes_per_family": 6, "features": f"{feature_mode} node features",
         "limitations": ["synthetic small dataset", "not a recognised benchmark", "not evidence of universal architecture superiority"]
     }
     return result
@@ -169,11 +171,12 @@ def main():
     parser.add_argument("--seeds", type=int, nargs="+", default=[11, 23, 37])
     parser.add_argument("--hidden-dim", type=int, default=32)
     parser.add_argument("--batch-size", type=int, default=8)
+    parser.add_argument("--feature-mode", choices=["constant", "degree"], default="constant")
     parser.add_argument("--output", type=Path, default=Path("results/sparse_synthetic.json"))
     args = parser.parse_args()
     if args.epochs < 1 or args.hidden_dim < 1 or args.batch_size < 1:
         parser.error("epochs, hidden-dim, and batch-size must be positive")
-    result = run_synthetic_experiment(tuple(args.seeds), args.epochs, args.hidden_dim, args.batch_size)
+    result = run_synthetic_experiment(tuple(args.seeds), args.epochs, args.hidden_dim, args.batch_size, args.feature_mode)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2))
