@@ -4,84 +4,96 @@
 
 > What structural information can message-passing graph neural networks preserve, and where do their expressive limits arise?
 
-This project implements Graph Convolutional Networks (GCNs), Graph Isomorphism Networks (GINs), and a 1-dimensional Weisfeiler–Leman (1-WL) colour-refinement diagnostic. It is a transparent research-learning artifact connecting graph-theoretic reasoning to neural implementation.
+This project is a transparent research-learning implementation connecting graph-theoretic reasoning to neural models. It includes dense reference GCN/GIN models, sparse edge-index implementations of GCN/GIN/GraphSAGE/GAT, a 1-WL diagnostic, a synthetic experiment, and optional real-world graph classification using PyTorch Geometric TU datasets.
 
-## Mathematical motivation
+## Start here
 
-Message-passing GNNs update node representations by aggregating information from neighbouring nodes. This creates a close connection to the 1-WL graph-isomorphism heuristic. Xu et al. (2019) show that suitably injective aggregation can match 1-WL discriminative power, motivating GIN; common GCN aggregation is generally less expressive.
+- [VISUAL_GUIDE.md](VISUAL_GUIDE.md) — diagrams and step-by-step explanation.
+- [PRESENTATION.md](PRESENTATION.md) — supervisor presentation narrative.
+- [SUPERVISOR_BRIEF.md](SUPERVISOR_BRIEF.md) — concise research overview.
 
-A controlled example compares the 10-cycle, C10, with the disjoint union of two 5-cycles, C5 union C5. These graphs are non-isomorphic: one is connected and the other has two components. Yet every vertex has degree two and all initial node features are identical. 1-WL therefore keeps every vertex in the same colour class at every refinement round. More message-passing layers do not resolve this collision under the standard 1-WL-bounded message-passing framework.
+## Main research idea
 
-## Implemented
+Message-passing GNNs update node representations by aggregating information from neighbours. This creates a close connection to the 1-dimensional Weisfeiler–Leman (1-WL) colour-refinement procedure.
 
-- Explicit undirected graph construction and graph-family generators.
-- Constant node features to isolate structural information.
-- Deterministic 1-WL colour refinement and colour histograms.
-- Two-layer symmetrically normalised GCN and learnable-epsilon GIN.
-- Graph-level sum/mean pooling and classification head.
-- Stratified train/test split and repeated seeded experiments.
-- JSON results with mean accuracy and across-seed population standard deviation.
-- Unit tests for adjacency, WL collision, and model forward passes.
+A controlled diagnostic compares the 10-cycle C10 with the disjoint union C5 ⊔ C5. These graphs are non-isomorphic (one connected component versus two), but every vertex has degree two and all initial node features are identical. 1-WL therefore retains matching colour histograms at every round. Standard message-passing GNNs bounded by 1-WL inherit this limitation under the same initial-feature setup.
 
-## Start with the visual guide\n\nNew to GNNs? Read **[VISUAL_GUIDE.md](VISUAL_GUIDE.md)** first. It explains the research question, graph examples, GCN/GIN message passing, the 1-WL counterexample, the code architecture, experimental method, outputs, learning goals, limitations, and next steps using Mermaid diagrams. GitHub renders these diagrams directly.\n\n## Layout
+## Implemented components
 
-- src/gnn_expressivity_lab/graphs.py — graph data structure and generators
-- src/gnn_expressivity_lab/wl.py — 1-WL refinement and comparison
-- src/gnn_expressivity_lab/models.py — GCN, GIN, graph-level classifier
-- src/gnn_expressivity_lab/experiment.py — seeded training and evaluation
-- tests/test_core.py — core correctness checks
-- SUPERVISOR_BRIEF.md — concise research overview
-- VISUAL_GUIDE.md — visual, step-by-step project explanation with Mermaid diagrams\n- PRESENTATION.md — supervisor discussion narrative
+| Component | Purpose |
+|---|---|
+| graphs.py | Graph object and synthetic graph generators |
+| wl.py | Deterministic 1-WL colour refinement |
+| models.py | Dense reference GCN and GIN |
+| sparse_models.py | Sparse edge-index GCN, GIN, GraphSAGE and single-head GAT |
+| sparse_experiment.py | Batched synthetic training, repeated seeds, accuracy, parameter counts and timing |
+| pyg_benchmark.py | Optional TU benchmark loader and experiment runner |
+| tests/ | Unit tests for graph logic, sparse models, gradients and batching |
 
-## Run locally
+## Installation
 
-Python 3.10+ is recommended.
+Python 3.10+ and PyTorch 2.1+.
 
     cd gnn_expressivity_lab
     python -m venv .venv
     source .venv/bin/activate
     python -m pip install -e ".[dev]"
     pytest -q
-    gnn-expressivity --epochs 120 --seeds 11 23 37 --output results/summary.json
 
-The experiment writes results/summary.json. It is intentionally small enough for a CPU.
+For optional real-world TU datasets:
+
+    python -m pip install -e ".[dev,benchmark]"
+
+## Run experiments
+
+Fast synthetic smoke test:
+
+    gnn-sparse-experiment --epochs 5 --seeds 11 --output results/smoke.json
+
+Default synthetic comparison:
+
+    gnn-sparse-experiment --epochs 120 --seeds 11 23 37 --output results/sparse_synthetic.json
+
+Optional TU dataset experiment (downloads the dataset on first use):
+
+    gnn-benchmark --dataset MUTAG --epochs 100 --seeds 11 23 37 --output results/MUTAG.json
+
+MUTAG and PROTEINS are examples of datasets with node features. Dataset-specific feature handling and benchmark-standard cross-validation must be checked before making published-benchmark comparisons.
 
 ## Experimental protocol
 
-The synthetic classification task contains five graph families (paths, stars, wheels, complete graphs, complete bipartite graphs), six sizes per family, constant scalar node features, and stratified 70/30 splits. GCN and GIN use the same training protocol and three default random seeds.
+The synthetic task contains five graph families and six graph sizes per family (30 graphs), constant scalar node features, stratified 70/30 train/test splits, and repeated random seeds. Four sparse message-passing architectures are compared with a shared hidden dimension, optimiser, pooling, and training budget.
 
-The C10 versus C5 union C5 result is a separate theoretical diagnostic. Do not treat classification accuracy as proof of expressivity. The WL collision is the mathematical observation; empirical accuracy is only a pipeline sanity check.
+The output reports per-seed train/test accuracy, mean and population standard deviation, parameter count, and measured training wall-clock time. Runtime is hardware- and environment-dependent; only compare timings collected on the same documented setup.
 
-## Research questions
+The C10 versus C5 ⊔ C5 diagnostic is separate from classification accuracy. Accuracy is not proof of theoretical expressivity; the 1-WL result is a specific theoretical diagnostic, not a complete graph-isomorphism solver.
 
-1. How do aggregation and readout choices affect structural information retained by message-passing GNNs?
-2. Under what graph and feature conditions do GCN/GIN-style models collapse non-isomorphic structures to indistinguishable representations?
-3. How should theoretical expressivity bounds be distinguished from empirical graph-classification performance?
+## Complexity note
 
-## Limitations
+The sparse layers operate on edge lists and aggregate messages with indexed reductions rather than constructing a dense N × N adjacency matrix. This avoids the dense adjacency storage bottleneck, although runtime still depends on edge count, feature width, hardware, and implementation overhead. The GAT implementation is a clear single-head reference, not a tuned high-performance kernel.
 
-- Synthetic, small dataset; not a recognised benchmark.
-- No new theorem or architecture is claimed.
-- 1-WL is a diagnostic, not a complete graph-isomorphism solver.
-- Training results depend on seeds and optimisation choices.
-- No hardware speed, energy, or deployment-efficiency claims.
-- This is a foundation for further work, not a completed PhD study.
+## Limitations and integrity
 
-## Next research-grade extensions
+- The synthetic set is small and is not a recognised benchmark.
+- The TU runner provides a basic stratified holdout protocol, not the repeated-fold protocol required for benchmark-standard claims.
+- No novel theorem or architecture is claimed.
+- Timing measurements are local and hardware-dependent.
+- The implementation is a research-learning artifact; all results must be reproduced and inspected before quoting.
 
-1. Add recognised graph datasets and documented splits (e.g. MUTAG, PROTEINS, IMDB-BINARY).
-2. Compare GCN, GIN, GraphSAGE, and GAT under parameter-matched settings.
-3. Build systematic 1-WL-indistinguishable graph-pair suites and vary initial features.
-4. Add confidence intervals, ablations, parameter counts, runtime, and memory measurements.
-5. Separate theoretical claims, implementation checks, and empirical observations in all reports.
+## Next research steps
+
+1. Run tests and reproduce the saved outputs.
+2. Use repeated stratified folds and report confidence intervals on TU datasets.
+3. Add parameter-matched and depth-matched ablations.
+4. Evaluate structural encodings and systematic 1-WL-indistinguishable graph pairs.
+5. Document hardware, software versions, runtime and memory consistently.
+6. Discuss a focused theoretical question with a graph-learning supervisor.
 
 ## References
 
-- Xu et al. (2019), How Powerful are Graph Neural Networks?, ICLR. https://arxiv.org/abs/1810.00826
-- Morris et al. (2019), Weisfeiler and Leman Go Neural: Higher-order Graph Neural Networks, AAAI. https://arxiv.org/abs/1810.02244
 - Kipf & Welling (2017), Semi-Supervised Classification with Graph Convolutional Networks. https://arxiv.org/abs/1609.02907
-- Maron et al. (2019), Provably Powerful Graph Networks, NeurIPS. https://arxiv.org/abs/1905.11136
+- Xu et al. (2019), How Powerful are Graph Neural Networks? https://arxiv.org/abs/1810.00826
+- Morris et al. (2019), Weisfeiler and Leman Go Neural: Higher-order Graph Neural Networks. https://arxiv.org/abs/1810.02244
+- Veličković et al. (2018), Graph Attention Networks. https://arxiv.org/abs/1710.10903
+- Hamilton et al. (2017), Inductive Representation Learning on Large Graphs. https://arxiv.org/abs/1706.02216
 
-## Academic integrity
-
-This repository is an independently documented portfolio prototype. Describe it as an implementation and exploratory study, not as a peer-reviewed result or proof of prior specialist GNN research. Run the tests and experiment, inspect the output, and be prepared to explain the mathematics and code before using it in an application or supervisor meeting.
