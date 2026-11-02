@@ -114,3 +114,24 @@ Sparse edge-index layers avoid constructing a dense N × N adjacency matrix. Thi
 - How should expressivity be studied jointly with computational cost?
 
 Closing: “This is a reproducible starting point, not a claimed research breakthrough. I would value guidance on narrowing it into a rigorous question that fits the group's research agenda.”
+
+
+## 15 — Feature ablation: constant versus degree features
+Show the paired synthetic experiment:
+- Constant features: every node starts with scalar 1.
+- Degree features: each node receives its degree as a scalar input.
+- Same graph families, seeds, model width, pooling, optimiser, and epoch budget.
+
+Preliminary local pilot test accuracy (mean ± population SD over three seeds):
+- GCN: 46.7% ± 18.9% with constant features; 80.0% ± 0.0% with degree features.
+- GIN: 86.7% ± 4.7% in both conditions.
+- GraphSAGE: 20.0% ± 0.0% with constant features; 96.7% ± 4.7% with degree features.
+- Single-head GAT: 20.0% ± 0.0% with constant features; 96.7% ± 4.7% with degree features.
+
+Interpretation: the toy task exposes feature sensitivity. Mean aggregation and attention can lose degree information when all initial node representations are identical; sum aggregation can preserve neighbourhood multiplicity. These are not universal architecture rankings and not real-world benchmark results.
+
+## 16 — What this taught me
+The input representation and aggregation function jointly determine what structural information is available. An architecture should not be judged from one synthetic feature condition.
+
+## 17 — What remains
+Run the paired ablation using the repository CLI, execute the optional TU repeated-fold benchmark after installing PyG, add model-selection controls, and measure peak memory on documented hardware. Do not report peak-memory or energy claims yet.
