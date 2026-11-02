@@ -34,3 +34,17 @@ This is an educational/research portfolio prototype. It does not claim a new the
 - Which theoretical prerequisites should be strengthened: graph isomorphism, combinatorics, algebra, approximation, or spectral graph theory?
 
 The work connects graph theory and machine-learning foundations to practical neural-network implementation. It is appropriate as a discussion artifact for a prospective doctoral researcher developing GNN specialisation, not as evidence of years of dedicated GNN research.
+
+
+## Expanded implementation and next validation stage
+
+The repository now has a sparse edge-index model module for GCN, GIN, GraphSAGE, and single-head GAT. A batched synthetic runner reports per-seed accuracy, mean and population standard deviation, parameter count, and local training time. An optional PyTorch Geometric TU dataset runner supports datasets such as MUTAG and PROTEINS when installed.
+
+These additions make the implementation more useful for comparative learning, but they do not by themselves establish a research contribution. The TU runner currently uses a stratified holdout rather than benchmark-standard repeated folds. Runtime comparisons must document hardware and software, and the attention implementation is a transparent single-head reference.
+
+Recommended validation sequence:
+1. Run the test suite and sparse synthetic smoke experiment.
+2. Reproduce a full synthetic run and archive its JSON plus environment metadata.
+3. Run MUTAG/PROTEINS only after installing the optional dependency and record dataset version/splits.
+4. Upgrade to repeated stratified folds and confidence intervals before citing real-dataset performance.
+5. Use supervisor feedback to narrow the theory question.
