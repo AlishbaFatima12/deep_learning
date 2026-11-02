@@ -35,3 +35,12 @@ def test_sparse_gcn_layer_handles_isolated_node():
 
 def test_wl_counterexample_remains_separate_from_model_accuracy():
     assert wl_equivalent(cycle_graph(10), disjoint_cycles([5, 5]), rounds=5)
+
+
+def test_degree_feature_ablation_encodes_node_degrees():
+    from gnn_expressivity_lab.graphs import benchmark_graphs
+    constant = benchmark_graphs(feature_mode="constant")
+    degree = benchmark_graphs(feature_mode="degree")
+    assert constant[0].x.shape == degree[0].x.shape
+    assert torch.all(constant[0].x == 1)
+    assert torch.unique(degree[0].x).numel() > 1
