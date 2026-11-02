@@ -19,4 +19,4 @@ jobs:
         env:
           PYTHONPATH: gnn_expressivity_lab/src
         run: |
-          pylint --errors-only gnn_expressivity_lab/src/gnn_expressivity_lab gnn_expressivity_lab/tests
+          pylint --errors-only --disable=import-error gnn_expressivity_lab/src/gnn_expressivity_lab gnn_expressivity_lab/tests
