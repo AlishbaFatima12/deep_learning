@@ -171,12 +171,20 @@ def main():
     parser.add_argument("--seeds", type=int, nargs="+", default=[11, 23, 37])
     parser.add_argument("--hidden-dim", type=int, default=32)
     parser.add_argument("--batch-size", type=int, default=8)
-    parser.add_argument("--feature-mode", choices=["constant", "degree"], default="constant")
+    parser.add_argument("--feature-mode", choices=["constant", "degree", "both"], default="constant", help="Run one feature condition or both for an ablation")
     parser.add_argument("--output", type=Path, default=Path("results/sparse_synthetic.json"))
     args = parser.parse_args()
     if args.epochs < 1 or args.hidden_dim < 1 or args.batch_size < 1:
         parser.error("epochs, hidden-dim, and batch-size must be positive")
-    result = run_synthetic_experiment(tuple(args.seeds), args.epochs, args.hidden_dim, args.batch_size, args.feature_mode)
+    if args.feature_mode == "both":
+        result = {
+            "feature_ablation": {
+                "constant": run_synthetic_experiment(tuple(args.seeds), args.epochs, args.hidden_dim, args.batch_size, "constant"),
+                "degree": run_synthetic_experiment(tuple(args.seeds), args.epochs, args.hidden_dim, args.batch_size, "degree"),
+            }
+        }
+    else:
+        result = run_synthetic_experiment(tuple(args.seeds), args.epochs, args.hidden_dim, args.batch_size, args.feature_mode)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
     print(json.dumps(result, indent=2))
