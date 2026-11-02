@@ -1,76 +1,112 @@
 # Supervisor Presentation: GNN Expressivity and the Limits of Message Passing
 
-*A 10-slide research conversation deck. Keep claims conservative and invite technical discussion.*
+*A visual 12-slide discussion plan. Use the diagrams in VISUAL_GUIDE.md; keep theoretical claims separate from empirical results.*
 
----
+## Slide 1 — The research question
+**What can message-passing GNNs distinguish, and what structural information can they lose?**
+- PyTorch implementation: GCN and GIN
+- Graph-theoretic diagnostic: 1-WL colour refinement
+- Controlled synthetic graph experiments
 
-## 1 — Beyond Neighbourhood Aggregation
-**A reproducible study of GNN expressivity and 1-WL limitations**  
-PyTorch implementation · Graph theory · Controlled experiments
+Speaker: “I wanted to understand both how these models learn from graph structure and where their mathematical limits come from.”
 
-Opening: “I wanted to understand not only how graph neural networks learn, but also what structural information their message-passing mechanism can fundamentally fail to distinguish.”
+## Slide 2 — Why graphs?
+Visual: draw a small social/citation network beside a table.
+- Nodes represent entities.
+- Edges represent relationships.
+- Node features describe entities.
+- The neighbourhood is part of the input, not just an extra column.
 
-## 2 — Why graphs need their own learning models
-- Tabular learning often treats rows as independent examples.
-- In graphs, entities are connected; neighbourhoods are part of the signal.
-- GNNs learn node representations by repeatedly aggregating information from neighbours.
+## Slide 3 — The complete pipeline
+Visual: use the end-to-end Mermaid flowchart in VISUAL_GUIDE.md.
+1. Construct graphs and features.
+2. Run the 1-WL diagnostic.
+3. Train GCN and GIN.
+4. Pool node embeddings into graph embeddings.
+5. Evaluate over fixed seeds.
+6. Save JSON and interpret results cautiously.
 
-Visual suggestion: node features → neighbourhood aggregation → node embeddings → graph readout.
+## Slide 4 — How message passing works
+Visual: use the node-feature → neighbour messages → aggregation → update → readout diagram.
+- One layer exchanges information across one-hop neighbourhoods.
+- Stacked layers expand the receptive field.
+- Readout converts node representations into one graph representation.
 
-## 3 — The mathematical question
-**When can two different graphs look identical to a message-passing GNN?**
-- Local aggregation compresses a multiset of neighbour representations.
-- More rounds expand the receptive field but do not guarantee complete structural identification.
-- The 1-dimensional Weisfeiler–Leman (1-WL) test is a central theoretical comparison.
+## Slide 5 — GCN versus GIN
+Show both update equations:
+- GCN: (H' = \hat D^{-1/2}\hat A\hat D^{-1/2}HW)
+- GIN: (h_v' = MLP((1+\epsilon)h_v + \sum_{u\in N(v)}h_u))
 
-## 4 — GCN versus GIN
-**GCN:** degree-normalised neighbourhood aggregation.  
-**GIN:** sum aggregation followed by an MLP, designed to match 1-WL discriminative power under suitable assumptions.
+Explain: GCN uses symmetric degree normalisation; GIN uses sum aggregation followed by an MLP. GIN can match 1-WL under suitable assumptions; this is not a claim that every trained implementation achieves the bound.
 
-| Model | Aggregation intuition | Main point |
-|---|---|---|
-| GCN | Normalised neighbourhood aggregation | Normalisation can lose multiset distinctions |
-| GIN | Sum + MLP | Stronger multiset discrimination, still bounded by 1-WL |
+## Slide 6 — The 1-WL diagnostic
+Visual: colour refinement rounds.
+- Start from node features.
+- Each node receives a signature from its current colour and multiset of neighbour colours.
+- Recolour and compare histograms.
+- Matching histograms mean the 1-WL procedure did not distinguish the pair.
 
-## 5 — A concrete counterexample
-Compare C10 with C5 union C5.
-- Both have ten nodes; every node has degree two.
-- All nodes start with identical features.
+## Slide 7 — The key counterexample
+Visual: (C_{10}) beside (C_5 \sqcup C_5).
+- Both have 10 vertices.
+- Every vertex has degree 2.
+- All initial features are identical.
 - One graph is connected; the other has two components.
-- 1-WL keeps all nodes in one colour class at every round.
+- 1-WL keeps a single colour class in both graphs.
 
-Key point: additional message-passing layers do not resolve this collision under the standard 1-WL-bounded message-passing framework.
+Key message: non-isomorphic graphs can remain indistinguishable to 1-WL. Standard 1-WL-bounded message-passing GNNs inherit this limitation under the same feature setup.
 
-## 6 — What I implemented
-- Graph constructors with explicit undirected edge lists.
-- Canonical 1-WL colour refinement.
-- Two-layer GCN and GIN implementations in PyTorch.
-- Graph-level sum/mean pooling and classification head.
-- Stratified train/test split, fixed seeds, JSON result reporting.
-- Unit tests for adjacency, WL collision, and model forward passes.
+## Slide 8 — What was built?
+Use a four-block architecture diagram:
+- graphs.py: graph constructors and features
+- wl.py: colour refinement
+- models.py: GCN, GIN, pooling and classifier
+- experiment.py: splits, training, metrics and JSON
 
-## 7 — Experimental protocol
-- Five synthetic graph families; six sizes per family.
-- Constant node features to isolate structure.
-- Same split seeds and training budget for GCN and GIN.
-- Three default seeds; accuracy and across-seed dispersion reported.
+Mention unit tests separately from model-performance results.
 
-Caution: small pipeline sanity check, not a recognised benchmark or claim of superior performance.
+## Slide 9 — Experimental method
+- Five synthetic graph families, six graph sizes per family.
+- Constant scalar node features.
+- Stratified 70/30 train/test split.
+- Two-layer GCN and GIN.
+- Adam optimiser; cross-entropy objective.
+- Default seeds: 11, 23, 37.
+- Report train/test accuracy, mean test accuracy, and population standard deviation.
 
-## 8 — What results can and cannot say
-**Can say:** whether the implementation runs, whether the synthetic classes are learnable under this protocol, and how variable results are across seeds.  
-**Cannot say:** that one architecture is universally more expressive, that it solves graph isomorphism, or that it establishes a new theoretical result.
+## Slide 10 — Understanding the output
+Show an example JSON schema, not fabricated scores:
+```json
+{
+  "gcn": {
+    "train_accuracy_mean": "...",
+    "test_accuracy_mean": "...",
+    "test_accuracy_population_sd": "...",
+    "per_seed": []
+  },
+  "gin": {},
+  "expressivity_diagnostic": {},
+  "protocol": {}
+}
+```
+Explain: accuracy checks the synthetic classification pipeline; the WL diagnostic addresses a theoretical limitation. They answer different questions. Only show actual numeric values after running and checking the experiment.
 
-## 9 — Next research steps
-1. Add recognised graph datasets and documented splits.
-2. Add GraphSAGE and GAT baselines.
-3. Build a systematic suite of 1-WL-indistinguishable graph pairs.
-4. Study feature initialisation, pooling, and structural encodings.
-5. Add confidence intervals, ablations, complexity analysis, and reproducibility metadata.
+## Slide 11 — What I learned and what remains
+**Learning:** graph representations, message passing, normalisation versus sum aggregation, 1-WL, reproducible training, and the distinction between empirical and theoretical evidence.
 
-## 10 — Questions for the research group
-- Which expressivity gap is most interesting for the group's current work?
-- Would higher-order WL/GNNs or structural encodings be the more promising direction?
-- Which theoretical foundations and benchmark protocols should I prioritise?
+**Current limits:** synthetic data, dense adjacency matrices, no PyG, no GraphSAGE/GAT, no hardware measurements, no novel theorem or architecture.
 
-Closing: “My goal with this prototype was to create a transparent starting point and use it to ask a sharper mathematical question. I would value guidance on turning that question into a focused doctoral research problem.”
+## Slide 12 — Next steps and discussion
+1. Verify tests and reproduce the current experiment.
+2. Move to sparse operations / PyTorch Geometric.
+3. Add recognised graph benchmarks.
+4. Add GraphSAGE and GAT baselines.
+5. Run controlled ablations and measure runtime, memory, and parameter counts.
+6. Refine one focused theoretical question with supervisor guidance.
+
+Questions:
+- Which expressivity gap is most relevant to the group?
+- Should the next step prioritise higher-order WL methods, structural encodings, or aggregation analysis?
+- Which benchmark and statistical protocol should be adopted?
+
+Closing: “This is a transparent starting point. I am using it to build a stronger foundation in graph learning and to identify a precise question that can be studied rigorously.”
