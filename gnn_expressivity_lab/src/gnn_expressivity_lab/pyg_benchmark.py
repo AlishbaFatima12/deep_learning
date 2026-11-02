@@ -1,17 +1,9 @@
-"""Optional real-world graph classification benchmark using PyTorch Geometric TU datasets.
-
-Install with: pip install -e ".[dev,benchmark]"
-Example: gnn-benchmark --dataset MUTAG --epochs 100 --output results/mutag.json
-Dataset download occurs only when this command is run.
-"""
-import argparse
-import json
-from pathlib import Path
+"""Optional real-world graph classification benchmark using PyTorch Geometric TU datasets."""
 import torch
 from .graphs import Graph
-from .sparse_experiment import run_graph_experiment
 
 def load_tu_graphs(name: str, root: str):
+    """Load a TU dataset and convert examples to the project's graph data class."""
     try:
         from torch_geometric.datasets import TUDataset
     except ImportError as exc:
@@ -30,38 +22,18 @@ def load_tu_graphs(name: str, root: str):
             edge_index = torch.unique(edge_index, dim=1)
         label = int(data.y.view(-1)[0].item())
         graphs.append(Graph(x=x, edge_index=edge_index, label=label, name=f"{name}-{i}"))
-    feature_dims = {int(g.x.shape[1]) for g in graphs}
+    feature_dims = {int(graph.x.shape[1]) for graph in graphs}
     if len(feature_dims) != 1:
         raise ValueError("Dataset contains inconsistent node feature dimensions")
-    labels = sorted({g.label for g in graphs})
-    counts = {label: sum(g.label == label for g in graphs) for label in labels}
+    labels = sorted({graph.label for graph in graphs})
+    counts = {label: sum(graph.label == label for graph in graphs) for label in labels}
     if len(labels) < 2 or min(counts.values()) < 2:
         raise ValueError("Each class must contain at least two graphs")
-    return graphs, len(labels), {
+    metadata = {
         "dataset": name, "graphs": len(graphs), "classes": len(labels),
         "node_feature_dim": next(iter(feature_dims)),
-        "class_counts": {str(k): v for k, v in counts.items()},
+        "class_counts": {str(key): value for key, value in counts.items()},
         "source": "PyTorch Geometric TUDataset",
-        "note": "Use identical seeds and settings for comparisons; this basic protocol is not a substitute for benchmark-standard repeated folds."
+        "note": "Use documented repeated folds and comparable model-selection rules for benchmark-standard claims."
     }
-
-def main():
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--dataset", default="MUTAG", help="TU dataset name, e.g. MUTAG or PROTEINS")
-    parser.add_argument("--root", default="data/TUDataset")
-    parser.add_argument("--epochs", type=int, default=100)
-    parser.add_argument("--seeds", type=int, nargs="+", default=[11, 23, 37])
-    parser.add_argument("--output", type=Path, default=Path("results/MUTAG.json"))
-    args = parser.parse_args()
-    if args.epochs < 1:
-        parser.error("--epochs must be positive")
-    graphs, num_classes, metadata = load_tu_graphs(args.dataset, args.root)
-    result = run_graph_experiment(graphs, num_classes, tuple(args.seeds), args.epochs,
-                                  dataset_name=args.dataset)
-    result["dataset_metadata"] = metadata
-    args.output.parent.mkdir(parents=True, exist_ok=True)
-    args.output.write_text(json.dumps(result, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps(result, indent=2))
-
-if __name__ == "__main__":
-    main()
+    return graphs, len(labels), metadata
