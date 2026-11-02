@@ -14,10 +14,12 @@ from .wl import wl_equivalent
 ARCHITECTURES = ("gcn", "gin", "sage", "gat")
 
 def set_seed(seed: int):
+    """Seed Python and PyTorch random generators."""
     random.seed(seed)
     torch.manual_seed(seed)
 
 def stratified_split(graphs, seed: int, train_fraction: float = 0.7):
+    """Create a deterministic stratified holdout split."""
     rng = random.Random(seed)
     train, test = [], []
     for label in sorted({int(g.label) for g in graphs}):
@@ -33,10 +35,12 @@ def stratified_split(graphs, seed: int, train_fraction: float = 0.7):
     return train, test
 
 def _chunks(items, batch_size):
+    """Yield consecutive mini-batches from a sequence."""
     for start in range(0, len(items), batch_size):
         yield items[start:start + batch_size]
 
 def evaluate(model, graphs, batch_size=8):
+    """Calculate graph classification accuracy without gradient tracking."""
     model.eval()
     correct = total = 0
     with torch.no_grad():
@@ -47,39 +51,46 @@ def evaluate(model, graphs, batch_size=8):
             total += len(group)
     return correct / max(total, 1)
 
-def train_model(graphs, num_classes, architecture, seed, epochs=120,
-                hidden_dim=32, batch_size=8, pooling="mean"):
+def train_on_split(train, test, num_classes, architecture, seed, epochs=120,
+                   hidden_dim=32, batch_size=8, pooling="mean"):
+    """Fit one architecture on a fixed split and return descriptive metrics."""
     set_seed(seed)
-    train, test = stratified_split(graphs, seed)
-    input_dim = int(graphs[0].x.shape[1])
+    input_dim = int(train[0].x.shape[1])
     model = SparseGraphClassifier(input_dim, hidden_dim, num_classes,
                                   architecture=architecture, pooling=pooling, dropout=0.1)
     optimizer = torch.optim.Adam(model.parameters(), lr=0.01, weight_decay=1e-4)
     loss_fn = nn.CrossEntropyLoss()
     start = time.perf_counter()
     for _ in range(epochs):
-        random.shuffle(train)
+        shuffled = train[:]
+        random.shuffle(shuffled)
         model.train()
-        for group in _chunks(train, batch_size):
+        for group in _chunks(shuffled, batch_size):
             batch = batch_graphs(group)
             optimizer.zero_grad(set_to_none=True)
             loss = loss_fn(model(batch), batch.y)
             loss.backward()
             optimizer.step()
     elapsed = time.perf_counter() - start
-    train_accuracy = evaluate(model, train, batch_size)
-    test_accuracy = evaluate(model, test, batch_size)
     return {
         "seed": seed,
-        "train_accuracy": train_accuracy,
-        "test_accuracy": test_accuracy,
+        "train_accuracy": evaluate(model, train, batch_size),
+        "test_accuracy": evaluate(model, test, batch_size),
         "training_seconds": elapsed,
         "parameter_count": sum(p.numel() for p in model.parameters()),
     }
 
+def train_model(graphs, num_classes, architecture, seed, epochs=120,
+                hidden_dim=32, batch_size=8, pooling="mean"):
+    """Create a stratified holdout split and train one model."""
+    train, test = stratified_split(graphs, seed)
+    return train_on_split(train, test, num_classes, architecture, seed,
+                          epochs, hidden_dim, batch_size, pooling)
+
 def run_graph_experiment(graphs, num_classes, seeds=(11, 23, 37), epochs=120,
                          architectures=ARCHITECTURES, hidden_dim=32, batch_size=8,
                          dataset_name="custom"):
+    """Compare architectures over repeated stratified holdout seeds."""
     results = {}
     for architecture in architectures:
         runs = [train_model(graphs, num_classes, architecture, seed, epochs,
@@ -107,6 +118,7 @@ def run_graph_experiment(graphs, num_classes, seeds=(11, 23, 37), epochs=120,
     }
 
 def run_synthetic_experiment(seeds=(11, 23, 37), epochs=120, hidden_dim=32, batch_size=8):
+    """Run the controlled synthetic graph-family comparison and 1-WL diagnostic."""
     graphs = benchmark_graphs(feature_mode="constant")
     result = run_graph_experiment(graphs, 5, seeds, epochs, hidden_dim=hidden_dim,
                                   batch_size=batch_size, dataset_name="synthetic-graph-families")
@@ -126,6 +138,7 @@ def run_synthetic_experiment(seeds=(11, 23, 37), epochs=120, hidden_dim=32, batc
     return result
 
 def main():
+    """Run the synthetic sparse GNN experiment and write its JSON summary."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--epochs", type=int, default=120)
     parser.add_argument("--seeds", type=int, nargs="+", default=[11, 23, 37])
