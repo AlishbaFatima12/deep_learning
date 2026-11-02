@@ -21,6 +21,9 @@ Graph neural networks learn from relational structure rather than treating obser
 4. Repeat training under fixed seeds and report descriptive mean and dispersion.
 5. Interpret empirical results separately from the theoretical WL diagnostic.
 
+## Relevance to the theory-and-efficiency direction
+The current version is strongest on the expressivity/theory side: it makes the 1-WL comparison explicit and provides controlled GCN/GIN implementations. It does not yet establish computational efficiency. The reference implementation uses dense adjacency matrices for clarity, which incurs quadratic adjacency storage; a meaningful efficiency phase should add sparse message passing (for example, PyTorch Geometric), compare parameter-matched models, and report runtime and memory under a documented hardware/software setup. This limitation should be stated openly in any supervisor discussion.
+
 ## Scope and boundaries
 This is an educational/research portfolio prototype. It does not claim a new theorem, novel architecture, state-of-the-art performance, or validation on standard real-world graph benchmarks. The synthetic experiment is intended to verify the pipeline and expose modelling choices. A next phase would add recognised datasets, stronger baselines, systematic ablations, confidence intervals, and a comprehensive graph-pair evaluation suite.
 
