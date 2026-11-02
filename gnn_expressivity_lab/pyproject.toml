@@ -4,16 +4,19 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gnn-expressivity-lab"
-version = "0.1.0"
-description = "Reproducible GCN/GIN and 1-WL expressivity experiments"
+version = "0.2.0"
+description = "Sparse GCN, GIN, GraphSAGE, GAT and 1-WL expressivity experiments"
 requires-python = ">=3.10"
 dependencies = ["torch>=2.1"]
 
 [project.optional-dependencies]
 dev = ["pytest>=7.0"]
+benchmark = ["torch-geometric>=2.5"]
 
 [project.scripts]
 gnn-expressivity = "gnn_expressivity_lab.experiment:main"
+gnn-sparse-experiment = "gnn_expressivity_lab.sparse_experiment:main"
+gnn-benchmark = "gnn_expressivity_lab.pyg_benchmark:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]
