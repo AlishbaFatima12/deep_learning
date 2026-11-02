@@ -23,7 +23,7 @@ A controlled example compares the 10-cycle, C10, with the disjoint union of two 
 - JSON results with mean accuracy and across-seed population standard deviation.
 - Unit tests for adjacency, WL collision, and model forward passes.
 
-## Layout
+## Start with the visual guide\n\nNew to GNNs? Read **[VISUAL_GUIDE.md](VISUAL_GUIDE.md)** first. It explains the research question, graph examples, GCN/GIN message passing, the 1-WL counterexample, the code architecture, experimental method, outputs, learning goals, limitations, and next steps using Mermaid diagrams. GitHub renders these diagrams directly.\n\n## Layout
 
 - src/gnn_expressivity_lab/graphs.py — graph data structure and generators
 - src/gnn_expressivity_lab/wl.py — 1-WL refinement and comparison
@@ -31,7 +31,7 @@ A controlled example compares the 10-cycle, C10, with the disjoint union of two 
 - src/gnn_expressivity_lab/experiment.py — seeded training and evaluation
 - tests/test_core.py — core correctness checks
 - SUPERVISOR_BRIEF.md — concise research overview
-- PRESENTATION.md — 10-slide supervisor discussion narrative
+- VISUAL_GUIDE.md — visual, step-by-step project explanation with Mermaid diagrams\n- PRESENTATION.md — supervisor discussion narrative
 
 ## Run locally
 
