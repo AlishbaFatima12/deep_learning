@@ -312,3 +312,19 @@ The runner checks that node features are present and that each class has enough 
 The optional TU dataset runner uses repeated stratified k-fold evaluation rather than a single train/test split. For each repeat, examples are shuffled within each class and distributed across folds while preserving class proportions. Each fold is held out once; the remaining folds are used for training.
 
 The report includes the mean fold accuracy, sample standard deviation, and a percentile-bootstrap 95% interval over observed fold scores. These are descriptive summaries. For a publication, model selection should be separated from final evaluation and the dataset's accepted benchmark protocol should be followed.
+
+
+## 17. Feature ablation: constant features versus degree features
+
+The synthetic runner supports a paired ablation:
+
+- --feature-mode constant: every node starts with the same scalar feature. This isolates what the aggregation mechanism can infer from topology.
+- --feature-mode degree: each node receives its degree as an input feature. This supplies a simple structural signal directly to the model.
+
+This comparison is useful because mean aggregation and attention can lose degree information when every node begins with an identical feature. Sum aggregation can preserve multiplicity; adding degree features changes the information available at the input. Interpret differences as feature-condition sensitivity, not a universal model ranking.
+
+Run both conditions with the same seeds:
+
+\`\`\`bash
+gnn-sparse-experiment --epochs 120 --seeds 11 23 37 --feature-mode both --output results/feature_ablation.json
+\`\`\`
