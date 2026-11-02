@@ -1,0 +1,32 @@
+name: Optional TU dataset smoke test
+
+on:
+  push:
+    paths:
+      - "gnn_expressivity_lab/src/gnn_expressivity_lab/pyg_benchmark.py"
+      - "gnn_expressivity_lab/src/gnn_expressivity_lab/cross_validation.py"
+      - "gnn_expressivity_lab/src/gnn_expressivity_lab/sparse_models.py"
+      - "gnn_expressivity_lab/pyproject.toml"
+      - ".github/workflows/gnn-benchmark-smoke.yml"
+  pull_request:
+    paths:
+      - "gnn_expressivity_lab/src/gnn_expressivity_lab/pyg_benchmark.py"
+      - "gnn_expressivity_lab/src/gnn_expressivity_lab/cross_validation.py"
+      - "gnn_expressivity_lab/src/gnn_expressivity_lab/sparse_models.py"
+      - "gnn_expressivity_lab/pyproject.toml"
+      - ".github/workflows/gnn-benchmark-smoke.yml"
+
+jobs:
+  mutag-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install optional benchmark dependencies
+        run: python -m pip install -e "./gnn_expressivity_lab[dev,benchmark]"
+      - name: Run tiny real-dataset smoke evaluation
+        run: gnn-benchmark --dataset MUTAG --folds 2 --repeats 1 --epochs 1 --hidden-dim 8 --batch-size 32 --output /tmp/mutag-smoke.json
+      - name: Validate dataset output
+        run: python -c "import json; d=json.load(open('/tmp/mutag-smoke.json')); assert d['dataset_metadata']['dataset']=='MUTAG'"
