@@ -305,3 +305,10 @@ gnn-benchmark --dataset MUTAG --epochs 100 --seeds 11 23 37 --output results/MUT
 \`\`\`
 
 The runner checks that node features are present and that each class has enough examples for a stratified holdout. It does not claim benchmark-standard results: a publication-quality evaluation should use documented repeated folds, appropriate metrics, and comparable model-selection rules.
+
+
+## 16. Repeated stratified cross-validation
+
+The optional TU dataset runner uses repeated stratified k-fold evaluation rather than a single train/test split. For each repeat, examples are shuffled within each class and distributed across folds while preserving class proportions. Each fold is held out once; the remaining folds are used for training.
+
+The report includes the mean fold accuracy, sample standard deviation, and a percentile-bootstrap 95% interval over observed fold scores. These are descriptive summaries. For a publication, model selection should be separated from final evaluation and the dataset's accepted benchmark protocol should be followed.
