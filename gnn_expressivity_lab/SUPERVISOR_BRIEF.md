@@ -47,3 +47,10 @@ The project is strongest as a learning-oriented implementation of expressivity c
 - What is the most appropriate way to quantify efficiency alongside expressivity?
 
 The work is an independently documented portfolio prototype and evidence of active GNN learning and implementation, not evidence of years of dedicated GNN research.
+
+
+## Preliminary feature-ablation observation
+
+A local synthetic pilot (30 graphs, four sparse architectures, 120 epochs, three seeds) showed strong sensitivity to initial node features. With constant features, mean test accuracy was GCN 46.7%, GIN 86.7%, GraphSAGE 20.0%, and single-head GAT 20.0%. With degree-valued features, the corresponding scores were 80.0%, 86.7%, 96.7%, and 96.7%.
+
+This is a controlled synthetic observation, not a general model ranking or real-world benchmark result. It is consistent with mean/attention aggregation losing degree information when all input node representations are identical, while sum aggregation preserves multiplicity. The full details, conditions, and caveats are in FEATURE_ABLATION_RESULTS.md.
