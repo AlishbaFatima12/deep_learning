@@ -260,3 +260,48 @@ The order matters: first establish correctness and reproducibility, then scale t
 ## 12. Suggested 60-second explanation
 
 “My project is a small, reproducible study of the expressive limits of message-passing graph neural networks. I implemented GCN and GIN models in PyTorch and a 1-WL colour-refinement diagnostic. The key example compares a single ten-node cycle with two disconnected five-node cycles. Both are 2-regular and use identical initial node features, so 1-WL assigns matching colour histograms even though the graphs are not isomorphic. The project also trains the models on controlled synthetic graph families, repeats runs with fixed seeds, and records accuracy and variability. I treat those metrics as a pipeline check, not as proof of theoretical expressivity. My next steps are to validate the implementation, move to sparse PyG operations, add standard datasets and baselines, and then investigate expressivity and efficiency more systematically.”
+
+
+## 13. Sparse message passing and architecture comparison
+
+The expanded implementation includes four edge-index-based architectures. Instead of materialising a dense adjacency matrix, each layer gathers source-node messages along edges and accumulates them at destination nodes.
+
+\`\`\`mermaid
+flowchart LR
+  X[Node features X] --> S[Project node features]
+  E[Edge list: source → target] --> M[Gather source messages]
+  S --> M
+  M --> A[Aggregate at destination]
+  A --> U[Update node embeddings]
+  U --> R[Graph-level sum or mean pooling]
+  R --> C[Graph classifier]
+\`\`\`
+
+- **Sparse GCN:** symmetric degree-normalised message aggregation.
+- **Sparse GIN:** sum of neighbour embeddings plus a learnable self-term, followed by an MLP.
+- **Sparse GraphSAGE:** mean neighbour aggregation combined with a separate self transformation.
+- **Sparse GAT:** learned attention weights over incoming neighbours, with a destination-wise softmax.
+
+The GAT implementation is single-head and intentionally readable. It is a reference implementation, not a claim of speed parity with optimised libraries.
+
+## 14. What the expanded experiment measures
+
+The batched experiment compares all four architectures on the same synthetic graph collection and uses the same seeds, hidden width, optimiser, graph pooling, and train/test split procedure. It reports:
+
+- train accuracy and test accuracy for each seed;
+- mean and population standard deviation of test accuracy;
+- parameter count;
+- measured training wall-clock time.
+
+Timing is meaningful only with hardware/software details and identical conditions. Parameter count is not a runtime or memory measurement. A simple wall-clock comparison on a small synthetic dataset is only an initial profiling exercise.
+
+## 15. Optional real-world datasets
+
+The optional PyTorch Geometric extra enables the TU dataset runner. Example:
+
+\`\`\`bash
+python -m pip install -e ".[dev,benchmark]"
+gnn-benchmark --dataset MUTAG --epochs 100 --seeds 11 23 37 --output results/MUTAG.json
+\`\`\`
+
+The runner checks that node features are present and that each class has enough examples for a stratified holdout. It does not claim benchmark-standard results: a publication-quality evaluation should use documented repeated folds, appropriate metrics, and comparable model-selection rules.
