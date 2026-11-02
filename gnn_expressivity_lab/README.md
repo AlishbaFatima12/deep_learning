@@ -37,11 +37,12 @@ A controlled example compares the 10-cycle, C10, with the disjoint union of two 
 
 Python 3.10+ is recommended.
 
+    cd gnn_expressivity_lab
     python -m venv .venv
     source .venv/bin/activate
     python -m pip install -e ".[dev]"
     pytest -q
-    python -m gnn_expressivity_lab.experiment --epochs 120 --seeds 11 23 37
+    gnn-expressivity --epochs 120 --seeds 11 23 37 --output results/summary.json
 
 The experiment writes results/summary.json. It is intentionally small enough for a CPU.
 
