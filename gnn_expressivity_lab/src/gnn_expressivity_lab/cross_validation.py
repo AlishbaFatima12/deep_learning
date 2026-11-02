@@ -4,7 +4,7 @@ import json
 import random
 from pathlib import Path
 from statistics import mean, stdev
-from .sparse_experiment import ARCHITECTURES, train_on_split
+from .sparse_experiment import ARCHITECTURES, train_on_split, environment_metadata
 
 def stratified_kfold_indices(labels, folds: int, seed: int):
     """Return (train_indices, test_indices) for deterministic stratified folds."""
@@ -74,7 +74,9 @@ def run_kfold_experiment(graphs, num_classes, folds=10, repeats=3, seed=11,
             "test_accuracy_sample_sd": stdev(scores) if len(scores) > 1 else 0.0,
             "test_accuracy_bootstrap_95pct_ci": bootstrap_confidence_interval(scores, seed),
             "training_seconds_mean": mean(run["training_seconds"] for run in runs),
+            "test_inference_seconds_mean": mean(run["test_inference_seconds"] for run in runs),
             "parameter_count": runs[0]["parameter_count"],
+            "parameter_bytes_fp32_estimate": runs[0]["parameter_bytes_fp32_estimate"],
             "per_fold": runs,
         }
     return {
@@ -89,6 +91,7 @@ def run_kfold_experiment(graphs, num_classes, folds=10, repeats=3, seed=11,
             "confidence_interval": "percentile bootstrap over observed fold scores; descriptive, not a substitute for benchmark-specific statistical testing",
             "timing_note": "Training wall-clock time is hardware- and environment-dependent."
         },
+        "environment": environment_metadata(),
         "models": results,
     }
 
