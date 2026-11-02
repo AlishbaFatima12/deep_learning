@@ -26,3 +26,5 @@ jobs:
         run: gnn-sparse-experiment --epochs 2 --seeds 11 --output /tmp/gnn-sparse-smoke.json
       - name: Validate generated JSON
         run: python -c "import json; json.load(open('/tmp/gnn-sparse-smoke.json'))"
+      - name: Check optional benchmark CLI wiring
+        run: gnn-benchmark --help
