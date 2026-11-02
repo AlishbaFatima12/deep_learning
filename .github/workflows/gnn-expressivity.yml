@@ -23,8 +23,8 @@ jobs:
       - name: Run unit tests
         run: pytest -q gnn_expressivity_lab/tests
       - name: Run sparse-model smoke experiment
-        run: gnn-sparse-experiment --epochs 2 --seeds 11 --output /tmp/gnn-sparse-smoke.json
+        run: gnn-sparse-experiment --epochs 2 --seeds 11 --feature-mode both --output /tmp/gnn-feature-ablation-smoke.json
       - name: Validate generated JSON
-        run: python -c "import json; json.load(open('/tmp/gnn-sparse-smoke.json'))"
+        run: python -c "import json; json.load(open('/tmp/gnn-feature-ablation-smoke.json'))"
       - name: Check optional benchmark CLI wiring
         run: gnn-benchmark --help
