@@ -11,6 +11,7 @@ This project connects graph-theoretic reasoning to practical neural implementati
 - [VISUAL_GUIDE.md](VISUAL_GUIDE.md) — diagrams and step-by-step explanation.
 - [PRESENTATION.md](PRESENTATION.md) — supervisor presentation narrative.
 - [SUPERVISOR_BRIEF.md](SUPERVISOR_BRIEF.md) — concise research overview.
+- [FEATURE_ABLATION_RESULTS.md](FEATURE_ABLATION_RESULTS.md) — preliminary synthetic results with limitations.
 
 ## Research question
 
