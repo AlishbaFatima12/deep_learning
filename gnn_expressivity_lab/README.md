@@ -47,7 +47,7 @@ For optional PyTorch Geometric TU datasets:
 
 Synthetic comparison:
 
-    gnn-sparse-experiment --epochs 120 --seeds 11 23 37 --output results/sparse_synthetic.json
+    gnn-sparse-experiment --epochs 120 --seeds 11 23 37 --feature-mode both --output results/feature_ablation.json
 
 Real-world graph benchmark with repeated stratified folds:
 
@@ -57,7 +57,7 @@ Other TU datasets with suitable node features, such as PROTEINS, can be selected
 
 ## Evaluation protocol and outputs
 
-The synthetic dataset contains five graph families and six sizes per family (30 graphs), constant scalar node features, stratified 70/30 holdouts, and repeated seeds. It reports per-seed train/test accuracy, mean and population standard deviation, parameter count, and measured training wall-clock time.
+The synthetic dataset contains five graph families and six sizes per family (30 graphs), with a paired feature ablation: constant scalar features versus degree-valued node features. Both conditions use stratified 70/30 holdouts and repeated seeds. It reports per-seed train/test accuracy, mean and population standard deviation, parameter count, and measured training wall-clock time.
 
 The optional TU runner uses repeated stratified k-fold evaluation. It reports fold scores, mean, sample standard deviation, percentile-bootstrap 95% confidence intervals, parameter counts, and training time. The confidence interval is descriptive over observed fold scores; it is not a substitute for benchmark-specific statistical testing or the standard protocol required by a paper.
 
