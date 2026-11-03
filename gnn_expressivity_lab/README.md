@@ -12,6 +12,7 @@ This project connects graph-theoretic reasoning to practical neural implementati
 - [PRESENTATION.md](PRESENTATION.md) — supervisor presentation narrative.
 - [SUPERVISOR_BRIEF.md](SUPERVISOR_BRIEF.md) — concise research overview.
 - [FEATURE_ABLATION_RESULTS.md](FEATURE_ABLATION_RESULTS.md) — preliminary synthetic results with limitations.
+- [FINITE_PRECISION_RESULTS.md](FINITE_PRECISION_RESULTS.md) — pilot: how quantization and pruning erode 1-WL separation, with a saturation-versus-rounding ablation.
 
 ## Research question
 
@@ -65,6 +66,12 @@ The optional TU runner uses repeated stratified k-fold evaluation. It reports fo
 Runtime is hardware- and environment-dependent. Record CPU/GPU, operating system, Python, PyTorch, and PyG versions before comparing timings. Parameter count is not a memory measurement.
 
 The C10 versus C5 ⊔ C5 diagnostic is separate from classification accuracy. Accuracy is not proof of theoretical expressivity; the 1-WL result is a specific diagnostic, not a complete graph-isomorphism solver.
+
+## Expressivity under finite precision (pilot)
+
+Expressivity theory assumes exact arithmetic; deployed GNNs run at limited precision. `finite_precision.py` fake-quantizes a GIN encoder's weights and activations (8 to 2 bits) and measures how many 1-WL-distinguishable graph pairs it still separates, separating the effect of clipping (saturation) from rounding, plus a magnitude-pruning arm. In this pilot, separation is near-complete at 8 bits and collapses between 6 and 3 bits; rounding is the primary failure, and saturation adds damage only for degrees beyond the calibration range. See [FINITE_PRECISION_RESULTS.md](FINITE_PRECISION_RESULTS.md) for the protocol, tables and limitations.
+
+    gnn-finite-precision --output results/finite_precision.json
 
 ## Limitations and research integrity
 

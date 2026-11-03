@@ -17,6 +17,7 @@ benchmark = ["torch-geometric>=2.5", "numpy>=1.24"]
 gnn-expressivity = "gnn_expressivity_lab.experiment:main"
 gnn-sparse-experiment = "gnn_expressivity_lab.sparse_experiment:main"
 gnn-benchmark = "gnn_expressivity_lab.cross_validation:main"
+gnn-finite-precision = "gnn_expressivity_lab.finite_precision:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

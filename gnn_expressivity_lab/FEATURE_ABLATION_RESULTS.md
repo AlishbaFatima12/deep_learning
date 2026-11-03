@@ -29,6 +29,8 @@ Test accuracy mean ± population standard deviation across the three seeds:
 
 The constant-feature result is consistent with an important design property: when every node starts with the same representation, mean aggregation and attention can repeatedly aggregate indistinguishable messages and lose degree/multiplicity information. GIN's sum aggregation can preserve neighbourhood multiplicity. Supplying degree as an input feature changes the information available to all models, and GraphSAGE/GAT become able to classify these particular synthetic families.
 
+A rerun on Python 3.13.7, PyTorch 2.9.1 (CPU, Windows) is committed as results/feature_ablation.json. It matched six of the eight cells above exactly; GIN with constant features gave 90.0% and GAT with degree features 100.0%, an ordinary version-to-version difference on a ten-graph test split.
+
 ## Interpretation and caution
 
 1. The scores describe this small synthetic task and this exact training protocol only.

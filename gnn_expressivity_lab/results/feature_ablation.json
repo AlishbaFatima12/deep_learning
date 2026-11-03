@@ -1,0 +1,458 @@
+{
+  "feature_ablation": {
+    "constant": {
+      "dataset": "synthetic-graph-families",
+      "protocol": {
+        "seeds": [
+          11,
+          23,
+          37
+        ],
+        "epochs": 120,
+        "hidden_dim": 32,
+        "batch_size": 8,
+        "split": "stratified 70/30 per seed",
+        "optimizer": "Adam",
+        "learning_rate": 0.01,
+        "weight_decay": 0.0001,
+        "pooling": "mean",
+        "architectures": [
+          "gcn",
+          "gin",
+          "sage",
+          "gat"
+        ],
+        "timing_note": "Training wall-clock time measured locally; hardware and software context must accompany comparisons."
+      },
+      "environment": {
+        "python": "3.13.7",
+        "pytorch": "2.9.1+cpu",
+        "platform": "Windows-10-10.0.19045-SP0",
+        "processor": "Intel64 Family 6 Model 78 Stepping 3, GenuineIntel",
+        "device": "cpu",
+        "torch_threads": 2,
+        "memory_note": "Peak process/accelerator memory is not measured by this runner."
+      },
+      "models": {
+        "gcn": {
+          "train_accuracy_mean": 0.43333333333333335,
+          "test_accuracy_mean": 0.4666666666666667,
+          "test_accuracy_population_sd": 0.18856180831641267,
+          "training_seconds_mean": 2.062963366666736,
+          "test_inference_seconds_mean": 0.002847966666498299,
+          "parameter_count": 2341,
+          "parameter_bytes_fp32_estimate": 9364,
+          "per_seed": [
+            {
+              "seed": 11,
+              "train_accuracy": 0.2,
+              "test_accuracy": 0.2,
+              "training_seconds": 1.8020298000001276,
+              "train_inference_seconds": 0.005980899999940448,
+              "test_inference_seconds": 0.002284400000007736,
+              "parameter_count": 2341,
+              "parameter_bytes_fp32_estimate": 9364
+            },
+            {
+              "seed": 23,
+              "train_accuracy": 0.6,
+              "test_accuracy": 0.6,
+              "training_seconds": 1.8588678000000982,
+              "train_inference_seconds": 0.00631969999994908,
+              "test_inference_seconds": 0.004046199999720557,
+              "parameter_count": 2341,
+              "parameter_bytes_fp32_estimate": 9364
+            },
+            {
+              "seed": 37,
+              "train_accuracy": 0.5,
+              "test_accuracy": 0.6,
+              "training_seconds": 2.527992499999982,
+              "train_inference_seconds": 0.0038492000003316207,
+              "test_inference_seconds": 0.0022132999997666047,
+              "parameter_count": 2341,
+              "parameter_bytes_fp32_estimate": 9364
+            }
+          ]
+        },
+        "gin": {
+          "train_accuracy_mean": 0.9833333333333333,
+          "test_accuracy_mean": 0.9,
+          "test_accuracy_population_sd": 0.0,
+          "training_seconds_mean": 3.666504866666704,
+          "test_inference_seconds_mean": 0.003094466666728598,
+          "parameter_count": 4455,
+          "parameter_bytes_fp32_estimate": 17820,
+          "per_seed": [
+            {
+              "seed": 11,
+              "train_accuracy": 0.95,
+              "test_accuracy": 0.9,
+              "training_seconds": 2.6440268000001197,
+              "train_inference_seconds": 0.00378709999995408,
+              "test_inference_seconds": 0.0021550999999817577,
+              "parameter_count": 4455,
+              "parameter_bytes_fp32_estimate": 17820
+            },
+            {
+              "seed": 23,
+              "train_accuracy": 1.0,
+              "test_accuracy": 0.9,
+              "training_seconds": 5.39228520000006,
+              "train_inference_seconds": 0.006570799999735755,
+              "test_inference_seconds": 0.005635200000142504,
+              "parameter_count": 4455,
+              "parameter_bytes_fp32_estimate": 17820
+            },
+            {
+              "seed": 37,
+              "train_accuracy": 1.0,
+              "test_accuracy": 0.9,
+              "training_seconds": 2.9632025999999314,
+              "train_inference_seconds": 0.002373400000124093,
+              "test_inference_seconds": 0.0014931000000615313,
+              "parameter_count": 4455,
+              "parameter_bytes_fp32_estimate": 17820
+            }
+          ]
+        },
+        "sage": {
+          "train_accuracy_mean": 0.2,
+          "test_accuracy_mean": 0.2,
+          "test_accuracy_population_sd": 0.0,
+          "training_seconds_mean": 1.7446231333331828,
+          "test_inference_seconds_mean": 0.0026355666665646518,
+          "parameter_count": 3397,
+          "parameter_bytes_fp32_estimate": 13588,
+          "per_seed": [
+            {
+              "seed": 11,
+              "train_accuracy": 0.2,
+              "test_accuracy": 0.2,
+              "training_seconds": 1.5314628000000994,
+              "train_inference_seconds": 0.006216799999947398,
+              "test_inference_seconds": 0.0022447000001193373,
+              "parameter_count": 3397,
+              "parameter_bytes_fp32_estimate": 13588
+            },
+            {
+              "seed": 23,
+              "train_accuracy": 0.2,
+              "test_accuracy": 0.2,
+              "training_seconds": 1.8693270999997367,
+              "train_inference_seconds": 0.002967599999919912,
+              "test_inference_seconds": 0.0017697999996926228,
+              "parameter_count": 3397,
+              "parameter_bytes_fp32_estimate": 13588
+            },
+            {
+              "seed": 37,
+              "train_accuracy": 0.2,
+              "test_accuracy": 0.2,
+              "training_seconds": 1.8330794999997124,
+              "train_inference_seconds": 0.004269299999577925,
+              "test_inference_seconds": 0.0038921999998819956,
+              "parameter_count": 3397,
+              "parameter_bytes_fp32_estimate": 13588
+            }
+          ]
+        },
+        "gat": {
+          "train_accuracy_mean": 0.2,
+          "test_accuracy_mean": 0.2,
+          "test_accuracy_population_sd": 0.0,
+          "training_seconds_mean": 4.671716366666715,
+          "test_inference_seconds_mean": 0.004160766666548928,
+          "parameter_count": 2469,
+          "parameter_bytes_fp32_estimate": 9876,
+          "per_seed": [
+            {
+              "seed": 11,
+              "train_accuracy": 0.2,
+              "test_accuracy": 0.2,
+              "training_seconds": 5.09173839999994,
+              "train_inference_seconds": 0.006388499999957276,
+              "test_inference_seconds": 0.0028831999998146784,
+              "parameter_count": 2469,
+              "parameter_bytes_fp32_estimate": 9876
+            },
+            {
+              "seed": 23,
+              "train_accuracy": 0.2,
+              "test_accuracy": 0.2,
+              "training_seconds": 3.1534694000001764,
+              "train_inference_seconds": 0.013632400000005873,
+              "test_inference_seconds": 0.0038489999997182167,
+              "parameter_count": 2469,
+              "parameter_bytes_fp32_estimate": 9876
+            },
+            {
+              "seed": 37,
+              "train_accuracy": 0.2,
+              "test_accuracy": 0.2,
+              "training_seconds": 5.769941300000028,
+              "train_inference_seconds": 0.006898999999975786,
+              "test_inference_seconds": 0.005750100000113889,
+              "parameter_count": 2469,
+              "parameter_bytes_fp32_estimate": 9876
+            }
+          ]
+        }
+      },
+      "expressivity_diagnostic": {
+        "pair": [
+          "cycle-10",
+          "disjoint-cycles-5-5"
+        ],
+        "non_isomorphic_by_construction": true,
+        "one_wl_equivalent_through_5_rounds": true,
+        "interpretation": "The pair is 2-regular with identical initial node features. Matching 1-WL colour histograms demonstrate this specific collision; this is not a general graph-isomorphism test."
+      },
+      "dataset_description": {
+        "graph_count": 30,
+        "class_count": 5,
+        "graph_families": [
+          "path",
+          "star",
+          "wheel",
+          "complete",
+          "complete_bipartite"
+        ],
+        "sizes_per_family": 6,
+        "features": "constant node features",
+        "limitations": [
+          "synthetic small dataset",
+          "not a recognised benchmark",
+          "not evidence of universal architecture superiority"
+        ]
+      }
+    },
+    "degree": {
+      "dataset": "synthetic-graph-families",
+      "protocol": {
+        "seeds": [
+          11,
+          23,
+          37
+        ],
+        "epochs": 120,
+        "hidden_dim": 32,
+        "batch_size": 8,
+        "split": "stratified 70/30 per seed",
+        "optimizer": "Adam",
+        "learning_rate": 0.01,
+        "weight_decay": 0.0001,
+        "pooling": "mean",
+        "architectures": [
+          "gcn",
+          "gin",
+          "sage",
+          "gat"
+        ],
+        "timing_note": "Training wall-clock time measured locally; hardware and software context must accompany comparisons."
+      },
+      "environment": {
+        "python": "3.13.7",
+        "pytorch": "2.9.1+cpu",
+        "platform": "Windows-10-10.0.19045-SP0",
+        "processor": "Intel64 Family 6 Model 78 Stepping 3, GenuineIntel",
+        "device": "cpu",
+        "torch_threads": 2,
+        "memory_note": "Peak process/accelerator memory is not measured by this runner."
+      },
+      "models": {
+        "gcn": {
+          "train_accuracy_mean": 0.95,
+          "test_accuracy_mean": 0.8,
+          "test_accuracy_population_sd": 0.0,
+          "training_seconds_mean": 1.9072310333332705,
+          "test_inference_seconds_mean": 0.004190800000287709,
+          "parameter_count": 2341,
+          "parameter_bytes_fp32_estimate": 9364,
+          "per_seed": [
+            {
+              "seed": 11,
+              "train_accuracy": 0.95,
+              "test_accuracy": 0.8,
+              "training_seconds": 1.8483940999999504,
+              "train_inference_seconds": 0.0034697000000960543,
+              "test_inference_seconds": 0.004605800000263116,
+              "parameter_count": 2341,
+              "parameter_bytes_fp32_estimate": 9364
+            },
+            {
+              "seed": 23,
+              "train_accuracy": 0.9,
+              "test_accuracy": 0.8,
+              "training_seconds": 1.9348374000001058,
+              "train_inference_seconds": 0.007218399999601388,
+              "test_inference_seconds": 0.002295200000389741,
+              "parameter_count": 2341,
+              "parameter_bytes_fp32_estimate": 9364
+            },
+            {
+              "seed": 37,
+              "train_accuracy": 1.0,
+              "test_accuracy": 0.8,
+              "training_seconds": 1.938461599999755,
+              "train_inference_seconds": 0.005731400000058784,
+              "test_inference_seconds": 0.005671400000210269,
+              "parameter_count": 2341,
+              "parameter_bytes_fp32_estimate": 9364
+            }
+          ]
+        },
+        "gin": {
+          "train_accuracy_mean": 0.8666666666666667,
+          "test_accuracy_mean": 0.8666666666666667,
+          "test_accuracy_population_sd": 0.04714045207910316,
+          "training_seconds_mean": 2.551099866666694,
+          "test_inference_seconds_mean": 0.006376566666707125,
+          "parameter_count": 4455,
+          "parameter_bytes_fp32_estimate": 17820,
+          "per_seed": [
+            {
+              "seed": 11,
+              "train_accuracy": 0.9,
+              "test_accuracy": 0.8,
+              "training_seconds": 2.113469200000054,
+              "train_inference_seconds": 0.0031650000000809086,
+              "test_inference_seconds": 0.004010900000139372,
+              "parameter_count": 4455,
+              "parameter_bytes_fp32_estimate": 17820
+            },
+            {
+              "seed": 23,
+              "train_accuracy": 0.85,
+              "test_accuracy": 0.9,
+              "training_seconds": 2.545510800000102,
+              "train_inference_seconds": 0.0058833000002778135,
+              "test_inference_seconds": 0.013216700000157289,
+              "parameter_count": 4455,
+              "parameter_bytes_fp32_estimate": 17820
+            },
+            {
+              "seed": 37,
+              "train_accuracy": 0.85,
+              "test_accuracy": 0.9,
+              "training_seconds": 2.994319599999926,
+              "train_inference_seconds": 0.003224300000056246,
+              "test_inference_seconds": 0.0019020999998247134,
+              "parameter_count": 4455,
+              "parameter_bytes_fp32_estimate": 17820
+            }
+          ]
+        },
+        "sage": {
+          "train_accuracy_mean": 1.0,
+          "test_accuracy_mean": 0.9666666666666667,
+          "test_accuracy_population_sd": 0.04714045207910316,
+          "training_seconds_mean": 2.443964399999762,
+          "test_inference_seconds_mean": 0.004377833333213251,
+          "parameter_count": 3397,
+          "parameter_bytes_fp32_estimate": 13588,
+          "per_seed": [
+            {
+              "seed": 11,
+              "train_accuracy": 1.0,
+              "test_accuracy": 0.9,
+              "training_seconds": 1.9574430999996366,
+              "train_inference_seconds": 0.006427499999972497,
+              "test_inference_seconds": 0.00400599999966289,
+              "parameter_count": 3397,
+              "parameter_bytes_fp32_estimate": 13588
+            },
+            {
+              "seed": 23,
+              "train_accuracy": 1.0,
+              "test_accuracy": 1.0,
+              "training_seconds": 3.386364599999979,
+              "train_inference_seconds": 0.019604999999955908,
+              "test_inference_seconds": 0.007425899999816465,
+              "parameter_count": 3397,
+              "parameter_bytes_fp32_estimate": 13588
+            },
+            {
+              "seed": 37,
+              "train_accuracy": 1.0,
+              "test_accuracy": 1.0,
+              "training_seconds": 1.98808549999967,
+              "train_inference_seconds": 0.0029725999997936015,
+              "test_inference_seconds": 0.001701600000160397,
+              "parameter_count": 3397,
+              "parameter_bytes_fp32_estimate": 13588
+            }
+          ]
+        },
+        "gat": {
+          "train_accuracy_mean": 1.0,
+          "test_accuracy_mean": 1.0,
+          "test_accuracy_population_sd": 0.0,
+          "training_seconds_mean": 3.31927406666667,
+          "test_inference_seconds_mean": 0.0043868333333800065,
+          "parameter_count": 2469,
+          "parameter_bytes_fp32_estimate": 9876,
+          "per_seed": [
+            {
+              "seed": 11,
+              "train_accuracy": 1.0,
+              "test_accuracy": 1.0,
+              "training_seconds": 3.0428483999999116,
+              "train_inference_seconds": 0.009634799999730603,
+              "test_inference_seconds": 0.002988400000049296,
+              "parameter_count": 2469,
+              "parameter_bytes_fp32_estimate": 9876
+            },
+            {
+              "seed": 23,
+              "train_accuracy": 1.0,
+              "test_accuracy": 1.0,
+              "training_seconds": 3.020225499999924,
+              "train_inference_seconds": 0.005729900000005728,
+              "test_inference_seconds": 0.004681599999912578,
+              "parameter_count": 2469,
+              "parameter_bytes_fp32_estimate": 9876
+            },
+            {
+              "seed": 37,
+              "train_accuracy": 1.0,
+              "test_accuracy": 1.0,
+              "training_seconds": 3.894748300000174,
+              "train_inference_seconds": 0.0064403999999740336,
+              "test_inference_seconds": 0.0054905000001781445,
+              "parameter_count": 2469,
+              "parameter_bytes_fp32_estimate": 9876
+            }
+          ]
+        }
+      },
+      "expressivity_diagnostic": {
+        "pair": [
+          "cycle-10",
+          "disjoint-cycles-5-5"
+        ],
+        "non_isomorphic_by_construction": true,
+        "one_wl_equivalent_through_5_rounds": true,
+        "interpretation": "The pair is 2-regular with identical initial node features. Matching 1-WL colour histograms demonstrate this specific collision; this is not a general graph-isomorphism test."
+      },
+      "dataset_description": {
+        "graph_count": 30,
+        "class_count": 5,
+        "graph_families": [
+          "path",
+          "star",
+          "wheel",
+          "complete",
+          "complete_bipartite"
+        ],
+        "sizes_per_family": 6,
+        "features": "degree node features",
+        "limitations": [
+          "synthetic small dataset",
+          "not a recognised benchmark",
+          "not evidence of universal architecture superiority"
+        ]
+      }
+    }
+  }
+}

@@ -26,5 +26,7 @@ jobs:
         run: gnn-sparse-experiment --epochs 2 --seeds 11 --feature-mode both --output /tmp/gnn-feature-ablation-smoke.json
       - name: Validate generated JSON
         run: python -c "import json; json.load(open('/tmp/gnn-feature-ablation-smoke.json'))"
+      - name: Run finite-precision smoke experiment
+        run: gnn-finite-precision --seeds 11 --bits 4 --prune 0.5 --hidden-dim 8 --max-star-leaves 6 --random-pairs 5 --output /tmp/finite-precision-smoke.json
       - name: Check optional benchmark CLI wiring
         run: gnn-benchmark --help

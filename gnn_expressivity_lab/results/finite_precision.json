@@ -1,0 +1,745 @@
+{
+  "question": "Do quantized or pruned GIN encoders still separate 1-WL-distinguishable graphs?",
+  "setup": {
+    "model": "2-layer GIN, hidden 32, sum aggregation, sum readout, random init",
+    "features": "constant node features (pure structure, the 1-WL setting)",
+    "quantization": "symmetric uniform fake quantization; weights per-tensor at their own range; activations at 7 sites clipped at max |activation| on calibration graphs",
+    "calibration_graphs": "benchmark_graphs(): paths, stars, wheels, complete, complete bipartite, 7-12 nodes",
+    "seeds": [
+      11,
+      23,
+      37,
+      41,
+      53
+    ],
+    "pair_counts": {
+      "stars_k_vs_k+1": 60,
+      "paths_n_vs_n+1": 38,
+      "random_same_size": 100
+    }
+  },
+  "control_C10_vs_C5C5_separated_count": 0,
+  "quantization": {
+    "full": {
+      "float32": {
+        "stars_k_vs_k+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paths_n_vs_n+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "random_same_size": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_inside_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "8-bit": {
+        "stars_k_vs_k+1": [
+          1.0,
+          1.0,
+          1.0,
+          0.9833333333333333,
+          1.0
+        ],
+        "paths_n_vs_n+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "random_same_size": [
+          0.97,
+          0.99,
+          0.97,
+          0.97,
+          0.98
+        ],
+        "stars_inside_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          0.9,
+          1.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "6-bit": {
+        "stars_k_vs_k+1": [
+          0.8833333333333333,
+          0.8666666666666667,
+          0.8666666666666667,
+          0.7666666666666667,
+          0.8666666666666667
+        ],
+        "paths_n_vs_n+1": [
+          0.6578947368421053,
+          0.7631578947368421,
+          0.42105263157894735,
+          0.4473684210526316,
+          0.23684210526315788
+        ],
+        "random_same_size": [
+          0.99,
+          0.96,
+          0.97,
+          0.85,
+          0.95
+        ],
+        "stars_inside_calibrated_degree": [
+          0.9,
+          1.0,
+          0.8,
+          0.9,
+          0.8
+        ],
+        "stars_beyond_calibrated_degree": [
+          0.88,
+          0.84,
+          0.88,
+          0.74,
+          0.88
+        ]
+      },
+      "4-bit": {
+        "stars_k_vs_k+1": [
+          0.2,
+          0.31666666666666665,
+          0.2833333333333333,
+          0.38333333333333336,
+          0.016666666666666666
+        ],
+        "paths_n_vs_n+1": [
+          0.0,
+          0.0,
+          0.07894736842105263,
+          0.15789473684210525,
+          0.0
+        ],
+        "random_same_size": [
+          0.65,
+          0.9,
+          0.7,
+          0.69,
+          0.61
+        ],
+        "stars_inside_calibrated_degree": [
+          0.1,
+          0.2,
+          0.1,
+          0.3,
+          0.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          0.22,
+          0.34,
+          0.32,
+          0.4,
+          0.02
+        ]
+      },
+      "3-bit": {
+        "stars_k_vs_k+1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "paths_n_vs_n+1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "random_same_size": [
+          0.25,
+          0.21,
+          0.13,
+          0.17,
+          0.09
+        ],
+        "stars_inside_calibrated_degree": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      },
+      "2-bit": {
+        "stars_k_vs_k+1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "paths_n_vs_n+1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "random_same_size": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "stars_inside_calibrated_degree": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    },
+    "saturation_only": {
+      "8-bit": {
+        "stars_k_vs_k+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paths_n_vs_n+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "random_same_size": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_inside_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "6-bit": {
+        "stars_k_vs_k+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paths_n_vs_n+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "random_same_size": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_inside_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "4-bit": {
+        "stars_k_vs_k+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paths_n_vs_n+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "random_same_size": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_inside_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "3-bit": {
+        "stars_k_vs_k+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paths_n_vs_n+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "random_same_size": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_inside_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "2-bit": {
+        "stars_k_vs_k+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "paths_n_vs_n+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "random_same_size": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_inside_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      }
+    },
+    "rounding_only": {
+      "8-bit": {
+        "stars_k_vs_k+1": [
+          1.0,
+          1.0,
+          1.0,
+          0.9833333333333333,
+          1.0
+        ],
+        "paths_n_vs_n+1": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ],
+        "random_same_size": [
+          0.97,
+          0.99,
+          0.97,
+          0.97,
+          0.98
+        ],
+        "stars_inside_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          0.9,
+          1.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          1.0,
+          1.0,
+          1.0,
+          1.0,
+          1.0
+        ]
+      },
+      "6-bit": {
+        "stars_k_vs_k+1": [
+          0.9666666666666667,
+          1.0,
+          0.95,
+          0.9833333333333333,
+          0.9666666666666667
+        ],
+        "paths_n_vs_n+1": [
+          0.6578947368421053,
+          0.7631578947368421,
+          0.42105263157894735,
+          0.4473684210526316,
+          0.23684210526315788
+        ],
+        "random_same_size": [
+          0.99,
+          0.96,
+          0.97,
+          0.85,
+          0.95
+        ],
+        "stars_inside_calibrated_degree": [
+          0.9,
+          1.0,
+          0.8,
+          0.9,
+          0.8
+        ],
+        "stars_beyond_calibrated_degree": [
+          0.98,
+          1.0,
+          0.98,
+          1.0,
+          1.0
+        ]
+      },
+      "4-bit": {
+        "stars_k_vs_k+1": [
+          0.5666666666666667,
+          0.5666666666666667,
+          0.55,
+          0.65,
+          0.6166666666666667
+        ],
+        "paths_n_vs_n+1": [
+          0.0,
+          0.0,
+          0.07894736842105263,
+          0.15789473684210525,
+          0.0
+        ],
+        "random_same_size": [
+          0.65,
+          0.9,
+          0.7,
+          0.69,
+          0.61
+        ],
+        "stars_inside_calibrated_degree": [
+          0.1,
+          0.2,
+          0.1,
+          0.3,
+          0.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          0.66,
+          0.64,
+          0.64,
+          0.72,
+          0.74
+        ]
+      },
+      "3-bit": {
+        "stars_k_vs_k+1": [
+          0.38333333333333336,
+          0.36666666666666664,
+          0.18333333333333332,
+          0.15,
+          0.25
+        ],
+        "paths_n_vs_n+1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "random_same_size": [
+          0.25,
+          0.21,
+          0.13,
+          0.17,
+          0.09
+        ],
+        "stars_inside_calibrated_degree": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          0.46,
+          0.44,
+          0.22,
+          0.18,
+          0.3
+        ]
+      },
+      "2-bit": {
+        "stars_k_vs_k+1": [
+          0.0,
+          0.15,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "paths_n_vs_n+1": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "random_same_size": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "stars_inside_calibrated_degree": [
+          0.0,
+          0.0,
+          0.0,
+          0.0,
+          0.0
+        ],
+        "stars_beyond_calibrated_degree": [
+          0.0,
+          0.18,
+          0.0,
+          0.0,
+          0.0
+        ]
+      }
+    }
+  },
+  "pruning": {
+    "0%": {
+      "stars_k_vs_k+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "paths_n_vs_n+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "random_same_size": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "50%": {
+      "stars_k_vs_k+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "paths_n_vs_n+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "random_same_size": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "80%": {
+      "stars_k_vs_k+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "paths_n_vs_n+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "random_same_size": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "90%": {
+      "stars_k_vs_k+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "paths_n_vs_n+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "random_same_size": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ]
+    },
+    "95%": {
+      "stars_k_vs_k+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "paths_n_vs_n+1": [
+        1.0,
+        1.0,
+        1.0,
+        1.0,
+        1.0
+      ],
+      "random_same_size": [
+        0.99,
+        1.0,
+        1.0,
+        0.99,
+        0.94
+      ]
+    }
+  },
+  "environment": {
+    "python": "3.13.7",
+    "torch": "2.9.1+cpu",
+    "platform": "win32",
+    "seconds": 4.27
+  }
+}
